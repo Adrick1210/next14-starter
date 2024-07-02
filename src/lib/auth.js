@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 const login = async (credentials) => {
   try {
     connectToDB();
-    const user = User.findOne({ username: credentials.username });
+    const user = await User.findOne({ username: credentials.username });
     if (!user) {
       throw new Error("Wrong credentials!");
     }
@@ -40,12 +40,31 @@ export const {
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
     }),
+    // tutorial version
+    // CredentialsProvider({
+    //   async authorize(credentials) {
+    //     try {
+    //       const user = await login(credentials);
+    //       return user;
+    //     } catch (err) {
+    //       return null;
+    //     }
+    //   },
+    // }),
+
+    // tested version
     CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
       async authorize(credentials) {
         try {
           const user = await login(credentials);
-          return user;
+          return user ? user : null;
         } catch (err) {
+          console.error(err);
           return null;
         }
       },
@@ -55,7 +74,7 @@ export const {
     async signIn({ user, account, profile }) {
       console.log(profile);
       if (account.provider === "github") {
-        connectToDB();
+        await connectToDB();
         try {
           const user = await User.findOne({ email: profile.email });
           if (!user) {

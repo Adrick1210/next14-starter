@@ -87,9 +87,9 @@ export const register = async (previousState, formData) => {
   }
 };
 
-export const login = async (previousState, formData) => {
+export const login = async (prevState, formData) => {
   const { username, password } = Object.fromEntries(formData);
-
+  // console.log(username, password);
   try {
     await signIn("credentials", { username, password });
   } catch (err) {
