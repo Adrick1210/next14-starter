@@ -51,7 +51,7 @@ export const getUser = async (id) => {
 export const getUsers = async () => {
   try {
     connectToDB();
-    const users = await User.findById();
+    const users = await User.find();
     return users;
   } catch (err) {
     console.log(err);
